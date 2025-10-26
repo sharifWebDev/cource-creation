@@ -1,9 +1,11 @@
 <?php
 
+// routes/admin.php
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
- 
+
+// path1
 
 Route::middleware([
     'auth:sanctum',
@@ -15,5 +17,12 @@ Route::middleware([
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('/toggle-status/{id}', [AdminController::class, 'toggleStatus'])->name('data.toggleStatus');
 
+    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+    // path3
 
 });
