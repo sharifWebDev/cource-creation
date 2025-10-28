@@ -46,7 +46,34 @@
                     </a>
                 </li>
 
-                {{-- URLPath --}}
+                
+<li class="nav-item"> 
+            <a href="{{ url("admin/courses") }}" class="nav-link {{ request()->is("admin/courses*") ? "active" : "" }}">
+            <i class="nav-icon fas fa-angle-double-right"></i> <p>Courses</p>
+</a>
+</li>
+ 
+ 
+
+
+<li class="nav-item"> 
+            <a href="{{ url("admin/course-modules") }}" class="nav-link {{ request()->is("admin/course-modules*") ? "active" : "" }}">
+            <i class="nav-icon fas fa-angle-double-right"></i> <p>Course modules</p>
+</a>
+</li>
+ 
+ 
+
+
+<li class="nav-item"> 
+            <a href="{{ url("admin/courses") }}" class="nav-link {{ request()->is("admin/courses*") ? "active" : "" }}">
+            <i class="nav-icon fas fa-angle-double-right"></i> <p>Courses</p>
+</a>
+</li>
+ 
+ 
+
+{{-- URLPath --}}
 
             </ul>
         </nav> <!-- /.sidebar-menu -->

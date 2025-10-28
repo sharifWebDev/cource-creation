@@ -17,58 +17,107 @@
         color: rgb(7, 7, 7) !important;
     }
 
-    
-    .dt-button {
-        background-color: rgba(13, 110, 253, 0.3) !important;
-        border: 1px solid rgba(13, 110, 253) !important;
+    .column-toggle-btn {
+        background-color: rgba(108, 117, 125, 0.3) !important;
+        border: 1px solid rgba(108, 117, 125) !important;
         color: rgb(8, 8, 8) !important;
+        margin-right: 5px;
+        margin-bottom: 5px;
     }
 
-    .add-button {
-        color: rgb(8, 8, 8) !important;
+    .column-toggle-btn.active {
+        background-color: rgba(13, 110, 253, 0.6) !important;
+        border: 1px solid rgba(13, 110, 253) !important;
     }
 
-    div.dt-buttons>.dt-button:first-child, div.dt-buttons>div.dt-button-split .dt-button:first-child {
-        background: rgba(93, 151, 237, 0.748) !important;
+    .columns-modal .modal-dialog {
+        max-width: 500px;
     }
-    div.dt-button-collection .dt-button {
-        background: rgba(93, 151, 237, 0.748) !important;
-        border: 1px solid rgba(13, 110, 253) !important;
-        color: rgb(8, 8, 8) !important;
+
+    .columns-list {
+        max-height: 400px;
+        overflow-y: auto;
     }
-    #dataTable-length-wrapper, .dataTables_length{
+
+    /* Image thumbnail styles */
+    .table-img-thumbnail {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .table-img-thumbnail:hover {
+        transform: scale(1.8);
+        z-index: 1000;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .img-placeholder {
+        width: 60px;
+        height: 60px;
+        background-color: #f8f9fa;
+        border: 1px dashed #dee2e6;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 12px;
+    }
+
+    /* Image preview modal */
+    .image-preview-modal .modal-dialog {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .image-preview-modal .modal-content {
+        background: transparent;
+        border: none;
+    }
+
+    .image-preview-modal .modal-body {
+        display: flex;
         justify-content: center;
         align-items: center;
-        padding-top: 5px ! important;
+        padding: 0;
     }
-    #dataTable-length-wrapper label{
+
+    .image-preview-modal .preview-image {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+    }
+
+    #dataTable-length-wrapper, .dataTables_length {
+        justify-content: center;
+        align-items: center;
+        padding-top: 5px !important;
+    }
+
+    #dataTable-length-wrapper label {
         display: flex;
         justify-content: flex-start;
         align-items: center;
     }
+
     #dataTable-length-wrapper select {
         min-width: 60px !important;
         margin-left: 5px;
         margin-right: 5px;
     }
-    div.dt-button-background {
-        background: none !important;
-    }
 </style>
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.flash.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -81,7 +130,6 @@
     }
 
     function initializeDataTables() {
-
         $('table').each(function() {
             var tableName = getTableId(this);
 
@@ -89,8 +137,6 @@
                 var token = getCsrfToken();
                 var table = $('#' + tableName).DataTable({
                     dom: getDataTableDom(),
-                    caption: "A fictional company's timesheets table.",
-                    buttons: getTableButtons(),
                     processing: true,
                     serverSide: true,
                     responsive: true,
@@ -99,28 +145,27 @@
                     select: true,
                     ajax: getAjaxConfig(token, tableName),
                     columns: getTableColumns(tableName),
-                    order: [
-                        [0, 'desc']
-                    ],
+                    order: [[0, 'desc']],
                     drawCallback: function(settings) {
                         handleDrawCallback.call(this, settings, tableName);
                         attachRowClickEvent(tableName);
+                        attachImagePreviewEvents();
                     },
-                    sPaginationType: "full_numbers",
                     lengthMenu: getLengthMenuOptions(),
-                    language: getLanguageOptions()
+                    language: getLanguageOptions(),
+                    stateSave: true,
+                    stateDuration: 60 * 60 * 24 * 7
                 });
 
                 attachSearchInputListener(table, tableName);
+                initializeColumnCustomization(table, tableName);
             }
         });
     }
 
-
     function getCsrfToken() {
         return $('meta[name="csrf-token"]').attr('content');
     }
-
 
     function getAjaxConfig(token, tableName) {
         return {
@@ -143,11 +188,10 @@
             }
         };
     }
-        
 
     function getDataTableDom() {
         return `
-            <"row py-2"<"col-sm-12 col-md-8"B><"col-sm-12 col-md-4"f>>
+            <"row py-2"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>
             <"row"<"col-sm-12"tr>>
             <"row py-2"
             <"col-sm-12 col-md-3"i>
@@ -156,48 +200,75 @@
         `;
     }
 
-
-function getTableColumns(tableName) {
-    return [
-        getSLColumnConfig(),
-        ...getColumns(tableName),
-        getActions(tableName)
-    ];
-}
-
-function getColumns(tableName) {
-    let table = document.getElementById(tableName);
-    if (!table) {
-        console.error("Table not found:", tableName);
-        return [];
+    function getTableColumns(tableName) {
+        return [
+            getSLColumnConfig(),
+            ...getColumns(tableName),
+            getActions(tableName)
+        ];
     }
 
-    let columnsData = table.getAttribute("data-fields");
-    if (!columnsData) {
-        console.warn("No data-columns attribute found on table:", tableName);
-        return [];
-    }
-
-    try {
-        let columns = JSON.parse(columnsData);
-
-        if (!Array.isArray(columns)) {
-            console.error("Invalid format for data-columns. Expected an array.");
+    function getColumns(tableName) {
+        let table = document.getElementById(tableName);
+        if (!table) {
+            console.error("Table not found:", tableName);
             return [];
         }
 
-        return columns.map(column => ({
-            data: column.trim(),
-            name: column.trim(),
-            title: column.trim().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) // Format title
-        }));
+        let columnsData = table.getAttribute("data-fields");
+        let imageColumnsData = table.getAttribute("data-image-fields");
 
-    } catch (error) {
-        console.error("Error parsing data-columns:", error);
-        return [];
+        if (!columnsData) {
+            console.warn("No data-fields attribute found on table:", tableName);
+            return [];
+        }
+
+        try {
+            let columns = JSON.parse(columnsData);
+            let imageColumns = imageColumnsData ? JSON.parse(imageColumnsData) : [];
+
+            if (!Array.isArray(columns)) {
+                console.error("Invalid format for data-fields. Expected an array.");
+                return [];
+            }
+
+            return columns.map(column => {
+                const isImageColumn = imageColumns.includes(column);
+
+                let columnConfig = {
+                    data: column.trim(),
+                    name: column.trim(),
+                    title: column.trim().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+                    visible: true
+                };
+
+                // Add custom renderer for image columns
+                if (isImageColumn) {
+                    columnConfig.render = function(data, type, row) {
+                        if (data) {
+                            // Check if data is a full URL or just a path
+                            const imageUrl = data.startsWith('http') ? data : `/${data.replace(/^\//, '')}`;
+                            return `
+                                <img src="${imageUrl}"
+                                     class="table-img-thumbnail"
+                                     alt="${column}"
+                                     title="Click to view full image"
+                                     data-full-image="${imageUrl}">
+                            `;
+                        } else {
+                            return `<div class="img-placeholder">No Image</div>`;
+                        }
+                    };
+                }
+
+                return columnConfig;
+            });
+
+        } catch (error) {
+            console.error("Error parsing data-fields:", error);
+            return [];
+        }
     }
-}
-
 
     function indexUrlBuilder(tableName) {
         return $('#' + tableName).data('index-url');
@@ -222,19 +293,12 @@ function getColumns(tableName) {
             title: 'Actions',
             orderable: false,
             searchable: false,
+            visible: true,
             render: function(data, type, row) {
                 var view = viewUrlBuilder(tableName, row.id);
                 var edit = editUrlBuilder(tableName, row.id);
                 var deleteUrl = deleteUrlBuilder(tableName, row.id);
                 return `
-                <a href="${view}" class="btn btn-sm action-btn-info action-btn" data-action="view">
-                    <span class="default-text"><i class="fa fa-eye"></i></span>
-                    <span class="spinner-border spinner-border-sm d-none"></span><span class="">&nbsp;View</span>
-                </a>
-                <a href="${edit}" class="btn btn-sm action-btn-warning action-btn" data-action="edit">
-                    <span class="default-text"><i class="fa fa-edit"></i></span>
-                    <span class="spinner-border spinner-border-sm d-none"></span><span class="">&nbsp;Edit</span>
-                </a>
                 <a href="${deleteUrl}" class="btn btn-sm action-btn-danger delete action-btn" data-id="${row.id}" data-action="delete">
                     <span class="default-text"><i class="fa fa-trash"></i></span>
                     <span class="spinner-border spinner-border-sm d-none"></span><span class="">&nbsp;Delete</span>
@@ -244,49 +308,34 @@ function getColumns(tableName) {
         };
     }
 
-    function getSLColumnConfig(tableName) {
+    function getSLColumnConfig() {
         return {
             title: 'SL',
             data: null,
             orderable: true,
             searchable: false,
+            visible: true,
             render: function(data, type, row, meta) {
-                var table = $('#' + tableName).DataTable();
+                var table = $('#' + getTableId(this)).DataTable();
                 return generateSLNumber(meta, table);
             }
         };
     }
 
-    // function getSLColumnConfig(team_invitations) {
-    //     return {
-    //         title: 'SL',
-    //         data: null,
-    //         orderable: true,
-    //         searchable: false,
-    //         render: function(data, type, row, meta) {
-    //             var table = $('#' + team_invitations).DataTable();
-    //             var pageInfo = table.page.info();
-    //             return pageInfo.start + meta.row + 1;
-    //         }
-    //     };
-    // }
-
     function generateSLNumber(meta, table) {
         var pageInfo = table.page.info();
         var total = meta.settings.json.data.meta.total || 0;
-        var start =  meta.settings.json.data.meta.from - 1 || 0;
+        var start = meta.settings.json.data.meta.from - 1 || 0;
 
-        return table.order() === 'desc' ?
-            total - (meta.row + start) :
-            meta.row + 1 + start;
+        return start + meta.row + 1;
     }
 
-    function handleDrawCallback(settings, team_invitations) {
+    function handleDrawCallback(settings, tableName) {
         var api = this.api();
         var json = api.ajax.json();
         if (json && json.data && json.data.meta) {
             var meta = json.data.meta;
-            $('#' + team_invitations + '_info').html(
+            $('#' + tableName + '_info').html(
                 `Showing ${meta.from || 0} to ${meta.to || 0} of ${meta.total || 0} entries`
             );
         }
@@ -325,163 +374,96 @@ function getColumns(tableName) {
         });
     }
 
-    function getTableButtons() {
-        return [
-        {
-            extend: 'collection',
-            text: 'Export',
-            className: 'btn btn-primary',
+    // Image Preview Functionality
+    function attachImagePreviewEvents() {
+        // Remove existing event handlers to prevent duplicates
+        $('.table-img-thumbnail').off('click');
+
+        // Attach click event to image thumbnails
+        $('.table-img-thumbnail').on('click', function() {
+            const fullImageUrl = $(this).data('full-image');
+            if (fullImageUrl) {
+                $('#imagePreviewModal .preview-image').attr('src', fullImageUrl);
+                $('#imagePreviewModal').modal('show');
+            }
+        });
+    }
+
+    // Column Customization Functions
+    function initializeColumnCustomization(table, tableName) {
+        new $.fn.dataTable.Buttons(table, {
             buttons: [
-                getCopyButton(),
-                getCsvButton(),
-                getExcelButton(),
-                getPdfButton(),
-                getJsonButton(),
-                getXmlButton(),
-                getPrintButton()
-            ]
-        },
-            getColVisButton()
-        ];
-    }
-
-    function getCopyButton() {
-        return {
-            extend: 'copy',
-            className: 'btn btn-primary'
-        };
-    }
-
-    function getPrintButton() {
-        return {
-            extend: 'print',
-            className: 'btn btn-secondary',
-            text: 'Print',
-            exportOptions: {
-                columns: ':not(:last-child)'
-            },
-            customize: function(doc) {
-                doc.pageSize = 'A4';
-                doc.pageMargins = [20, 20, 20, 20];
-                doc.styles.tableHeader.alignment = 'center';
-                doc.styles.tableHeader.fontSize = 10;
-                doc.styles.tableHeader.fillColor = '#f2f2f2';
-                doc.styles.tableHeader.bold = true;
-                doc.defaultStyle.fontSize = 10;
-                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-                doc.content = [{
-                    table: doc.content[1].table
-                }];
-            }
-        };
-    };
-
-    function getCsvButton() {
-        return {
-            extend: 'csv',
-            className: 'btn btn-success'
-        };
-    }
-
-    function getExcelButton() {
-        return {
-            extend: 'excel',
-            className: 'btn btn-info'
-        };
-    }
-
-    function getPdfButton() {
-        return {
-            extend: 'pdf',
-            className: 'btn btn-danger',
-            exportOptions: {
-                columns: ':not(:last-child)'
-            },
-            customize: function(doc) {
-                doc.pageSize = 'A4';
-                doc.pageMargins = [15, 15, 15, 15];
-                doc.styles.tableHeader.alignment = 'center';
-                doc.styles.tableHeader.fontSize = 10;
-                doc.defaultStyle.fontSize = 10;
-                doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-            }
-        };
-    }
-
-    function getJsonButton() {
-        return {
-            text: 'JSON',
-            className: 'btn btn-warning',
-            action: function(e, dt, node, config) {
-                let table = dt;
-                let jsonData = table.rows({
-                    search: 'applied'
-                }).data().toArray();
-                let jsonStr = JSON.stringify(jsonData, null, 2);
-
-                let blob = new Blob([jsonStr], {
-                    type: "application/json"
-                });
-                let link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "data.json";
-                link.click();
-            }
-        };
-    }
-
-    function getXmlButton() {
-        return {
-            text: 'XML',
-            className: 'btn btn-dark',
-            action: function(e, dt, node, config) {
-                let xml = '<?xml version="1.0" encoding="UTF-8"?><data>';
-                let table = dt;
-
-                table.rows({
-                    search: 'applied'
-                }).data().each(function(row) {
-                    xml += '<row>';
-                    for (let key in row) {
-                        xml += `<${key}>${row[key]}</${key}>`;
+                {
+                    text: '<i class="fa fa-cog"></i> Customize Columns',
+                    className: 'btn btn-light column-customize-btn',
+                    action: function(e, dt, node, config) {
+                        showColumnsModal(table, tableName);
                     }
-                    xml += '</row>';
-                });
-                xml += '</data>';
+                }
+            ]
+        });
 
-                let blob = new Blob([xml], {
-                    type: "text/xml"
-                });
-                let link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "data.xml";
-                link.click();
-            }
-        };
+        table.buttons(0, null).container().appendTo($('#' + tableName + '_wrapper .dt-buttons'));
     }
 
+    function showColumnsModal(table, tableName) {
+        var columns = table.columns().header().toArray();
+        var columnsList = $('#columnsList');
+        columnsList.empty();
 
-    function getColVisButton() {
-        return {
-            extend: 'colvis',
-            className: 'btn btn-light',
-            text: 'Column Visibility'
-        };
+        // Skip first (SL) and last (Actions) columns
+        for (var i = 1; i < columns.length - 1; i++) {
+            var column = table.column(i);
+            var header = $(columns[i]);
+            var columnTitle = header.text() || 'Column ' + i;
+            var isVisible = column.visible();
+
+            var listItem = `
+                <div class="list-group-item">
+                    <div class="form-check">
+                        <input class="form-check-input column-checkbox" type="checkbox"
+                               data-column-index="${i}" ${isVisible ? 'checked' : ''}
+                               id="column-${i}">
+                        <label class="form-check-label" for="column-${i}">
+                            ${columnTitle}
+                        </label>
+                    </div>
+                </div>
+            `;
+            columnsList.append(listItem);
+        }
+
+        $('#columnsModal').modal('show');
+        attachColumnModalEvents(table);
     }
 
-    function getSpacer() {
-        return {
-            extend: 'spacer',
-            style: 'bar',
-            text: 'Export:'
-        };
+    function attachColumnModalEvents(table) {
+        $('#showAllColumns').off('click').on('click', function() {
+            $('.column-checkbox').prop('checked', true);
+        });
+
+        $('#hideAllColumns').off('click').on('click', function() {
+            $('.column-checkbox').prop('checked', false);
+        });
+
+        $('#applyColumns').off('click').on('click', function() {
+            $('.column-checkbox').each(function() {
+                var columnIndex = $(this).data('column-index');
+                var isVisible = $(this).is(':checked');
+                table.column(columnIndex).visible(isVisible);
+            });
+
+            $('#columnsModal').modal('hide');
+            table.draw();
+        });
     }
 
     function attachRowClickEvent(tableName) {
-
         $('#' + tableName + ' tbody').off("click").on("click", "tr", function(e) {
-
-            if (!$(e.target).closest('.action-btn').length) {
+            // Don't trigger row click if clicking on images or action buttons
+            if (!$(e.target).closest('.action-btn').length &&
+                !$(e.target).hasClass('table-img-thumbnail') &&
+                !$(e.target).closest('.img-placeholder').length) {
                 let editButton = $(this).find('.action-btn-warning');
                 let editUrl = editButton.attr("href");
 
@@ -491,7 +473,6 @@ function getColumns(tableName) {
             }
         });
     }
-
 
     $(document).on("click", ".action-btn", function(e) {
         e.preventDefault();
@@ -534,8 +515,7 @@ function getColumns(tableName) {
                             'Your item has been deleted.',
                             'success'
                         );
-                        // $('#example1').DataTable().ajax.reload(); // reload table data
-                        button.closest("tr").remove(); // Optionally remove the row from the table
+                        $('#' + getTableId(button.closest('table'))).DataTable().ajax.reload();
                     },
                     error: function(xhr, status, error) {
                         Swal.fire(
@@ -543,22 +523,22 @@ function getColumns(tableName) {
                             'An error occurred. Please try again.',
                             'error'
                         );
-                        button.find(".default-text").removeClass("d-none");
-                        button.find(".spinner-border").addClass("d-none");
-                        button.prop("disabled", false);
+                        resetButtonState(button);
                     }
                 });
             } else {
-                // Reset the button if the action was cancelled
-                button.find(".default-text").removeClass("d-none");
-                button.find(".spinner-border").addClass("d-none");
-                button.prop("disabled", false);
+                resetButtonState(button);
             }
         });
     }
 
+    function resetButtonState(button) {
+        button.find(".default-text").removeClass("d-none");
+        button.find(".spinner-border").addClass("d-none");
+        button.prop("disabled", false);
+    }
+
     $(window).on("pageshow", function(event) {
-        // Reset button state when the page is shown
         $(".action-btn .default-text").removeClass("d-none");
         $(".action-btn .spinner-border").addClass("d-none");
         $(".action-btn").prop("disabled", false);
