@@ -131,7 +131,7 @@ class CourseModuleContent extends Model
         );
     }
 
-    public function validateContentData(): void
+    public function validateContentData2(): void
     {
         $contentType = $this->contentType;
         if (!$contentType || !$contentType->validation_rules) return;
@@ -146,12 +146,10 @@ class CourseModuleContent extends Model
         }
     }
 
-    public function validateContentData6(): void
+    public function validateContentData(): void
     {
         $contentType = $this->contentType;
         if (!$contentType) return;
-
-        dd($this->content_data);
 
         $slug = $contentType->slug;
         $data = $this->content_data ?? [];
