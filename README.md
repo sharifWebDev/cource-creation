@@ -87,3 +87,11 @@ http://127.0.0.1:8000/admin/courses
   http://127.0.0.1:8000/admin/courses/create
   - Course List
   http://127.0.0.1:8000/admin/courses
+
+
+**Demo image:** 
+Course LIST
+![alt text](image.png)
+
+Course Creation:
+![alt text](image-1.png)

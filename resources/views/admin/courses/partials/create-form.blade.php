@@ -306,7 +306,7 @@
                     data-target="#contentDetails__MODULE_INDEX____CONTENT_INDEX__" aria-expanded="false"
                     aria-controls="contentDetails__MODULE_INDEX____CONTENT_INDEX__">
                     <i class="fas fa-chevron-down"></i>
-                    <button type="button" class="btn-remove remove-content">
+                    <button type="button" class="btn-remove remove-content" style="z-index: 50 !important;">
                         <i class="fas fa-times"></i>
                     </button>
                 </button>
