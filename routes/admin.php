@@ -1,12 +1,9 @@
 <?php
 
-// routes/admin.php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CourseController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
-
-// path1
 
 Route::middleware([
     'auth:sanctum',
@@ -33,9 +30,5 @@ Route::middleware([
         });
     Route::post('/{id}/publish', [CourseController::class, 'publish'])->name('publish');
     Route::post('/{id}/unpublish', [CourseController::class, 'unpublish'])->name('unpublish');
-
-    // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // path3
 
 });

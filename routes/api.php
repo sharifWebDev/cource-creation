@@ -4,9 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\CourseController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
-
-// Route::post('/admin/login', [AuthController::class, 'login']);
-
+ 
 Route::middleware('auth:sanctum')->get('/v1/user', function (Request $request) {
     return '$request->user()';
 });
@@ -23,6 +21,5 @@ Route::middleware('auth:sanctum', 'verified')
             Route::delete('destroy/{id}', [CourseController::class, 'destroy'])->name('destroy');
         });
 
-        // path3
 
     });
